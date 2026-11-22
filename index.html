@@ -23,8 +23,13 @@ main{padding:12px 12px 90px;max-width:900px;margin:0 auto}
 h2.g{font-size:13px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--acento);margin:16px 2px 6px}
 .tarjeta{display:block;width:100%;text-align:left;background:var(--hoja);border:1px solid var(--linea);border-radius:12px;padding:13px;margin-bottom:8px}
 .tarjeta .t{font-weight:700}.tarjeta .s{font-size:13px;color:var(--gris);margin-top:3px}
-.pest{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;position:sticky;top:calc(62px + env(safe-area-inset-top));z-index:4;background:var(--papel);padding:4px 0 8px}
-.pest button{background:var(--hoja);border:1px solid var(--linea);border-radius:9px;min-height:42px;font-size:14px;font-weight:600}
+.pest{display:grid;grid-template-columns:repeat(6,1fr);gap:4px;position:sticky;top:calc(62px + env(safe-area-inset-top));z-index:4;background:var(--papel);padding:4px 0 8px}
+.pest button{background:var(--hoja);border:1px solid var(--linea);border-radius:9px;min-height:42px;font-size:13px;font-weight:600;padding:0 2px}
+.rev{background:#fee2e2;border:1px solid #f5b5b5;border-radius:10px;padding:9px 12px;font-size:14px;margin-bottom:10px}
+.rev b{color:var(--rojo)}
+.ev{background:var(--hoja);border:1px solid var(--linea);border-left:5px solid var(--acento);border-radius:10px;padding:9px 12px;margin-bottom:6px;font-size:14px}
+.ev .f{font-size:12px;color:var(--gris)}
+.alerta{color:var(--rojo);font-weight:700}
 .pest button.on{background:var(--tinta);color:#fff;border-color:var(--tinta)}
 .nota{background:#fef3c7;border:1px solid #f1d58a;border-radius:10px;padding:9px 12px;font-size:14px;margin-bottom:10px}
 .plano{background:var(--hoja);border:1px solid var(--linea);border-radius:12px;margin-bottom:10px;overflow:hidden}
@@ -81,12 +86,12 @@ input.campo{width:100%;background:var(--hoja);border:1px solid var(--linea);bord
 <div id="toast"></div>
 <script>
 'use strict';
-const VERSION='1.0';
+const VERSION='1.1';
 const GH={dueno:'handeress',repo:'Bitacora-datos',carpeta:'muebles'};
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const demo=new URLSearchParams(location.search).has('demo');
-const S={vista:'inicio',mueble:null,pest:'plano',q:'',uni:localStorage.getItem('mu_uni')||'cm'};
+const S={vista:'inicio',mueble:null,pest:'plano',q:'',uni:localStorage.getItem('mu_uni2')||'mm'};
 let token='',indice=[],muebles={},estado='',ocupado=false,urls={};
 let hallados={};try{hallados=JSON.parse(localStorage.getItem('mu_hallados')||'{}');}catch(e){}
 let herr={};try{herr=JSON.parse(localStorage.getItem('mu_herr')||'{}');}catch(e){}
@@ -149,8 +154,9 @@ function pintar(){
 
 function pintarMueble(m){
   $('#titulo').textContent=m.nombre+' · '+(m.proyectoNombre||'');
-  const P=[['plano','Plano'],['3d','3D'],['corte','Corte'],['herr','Herrajes'],['taller','Taller']];
+  const P=[['plano','Plano'],['3d','3D'],['corte','Corte'],['herr','Herrajes'],['taller','Taller'],['hist','Historial']];
   let h=`<div class="pest">${P.map(([k,t])=>`<button data-p="${k}" class="${S.pest===k?'on':''}">${t}</button>`).join('')}</div><div class="estado" id="est"></div>`;
+  const revs=(m.revisiones||[]); if(revs.length&&S.pest!=='hist')h+=`<div class="rev"><b>⚠ Por revisar (${revs.length})</b>${S.pest==='plano'?revs.map(r=>`<div>· ${esc(r.texto)}</div>`).join(''):' · ver en Plano o Historial'}</div>`;
   if(S.pest==='plano'){ if(m.nota)h+=`<div class="nota">${esc(m.nota)}</div>`;
     h+=(m.planos||[]).map((p,i)=>`<div class="plano"><div class="t">${esc(p.titulo)}</div><img data-pl="${i}" alt="${esc(p.titulo)}"></div>`).join('')||'<div class="vacio">Sin planos.</div>';
     if((m.docs||[]).length)h+=`<h2 class="g">Archivos en Drive</h2><div class="links">${m.docs.map(d=>`<a href="${esc(d.url)}" target="_blank" rel="noopener">${esc(d.titulo)}</a>`).join('')}</div>`;}
@@ -159,11 +165,15 @@ function pintarMueble(m){
     h+=`<input class="buscar" id="q" type="search" placeholder="Buscar código o pieza" value="${esc(S.q)}">`;
     for(const[mat,ps]of Object.entries(mats)){const q=S.q.trim().toLowerCase();const v=ps.filter(p=>!q||(p.codigo+' '+p.nombre).toLowerCase().includes(q));if(!v.length)continue;
       h+=`<h2 class="g">${esc(mat)} · ${ps[0].esp||15} mm · ${ps.reduce((s,p)=>s+p.cant,0)} piezas</h2><table><colgroup><col style="width:21%"><col style="width:37%"><col style="width:25%"><col style="width:17%"></colgroup><tr><th>Código</th><th>Pieza</th><th>Medida</th><th>Canto</th></tr>`
-       +v.map(p=>`<tr><td class="cod">${esc(p.codigo)}<div class="det">× ${p.cant}</div></td><td>${esc(p.nombre)}${p.detalle?`<div class="det">${esc(p.detalle)}</div>`:''}</td><td class="n">${mm(p.largo)} × ${mm(p.ancho)}${p.final?`<div class="det">final ${mm(p.final.largo)} × ${mm(p.final.ancho)}</div>`:''}</td><td class="cantos">${cantosTxt(p.cantos).replace(/ /g,'<br>')}</td></tr>`).join('')+'</table>';}
+       +v.map(p=>`<tr><td class="cod">${esc(p.codigo)}${p.revisar?' <span class="alerta">⚠</span>':''}<div class="det">× ${p.cant}</div></td><td>${esc(p.nombre)}${p.detalle?`<div class="det">${esc(p.detalle)}</div>`:''}${p.revisar?`<div class="det alerta">Revisar: ${esc(p.revisar)}</div>`:''}</td><td class="n">${mm(p.largo)} × ${mm(p.ancho)}${p.final?`<div class="det">final ${mm(p.final.largo)} × ${mm(p.final.ancho)}</div>`:''}</td><td class="cantos">${cantosTxt(p.cantos).replace(/ /g,'<br>')}</td></tr>`).join('')+'</table>';}
     h+='<p class="det">Medidas en mm. Cantos: R rígido, F flexible · L1 L2 lados largos, A1 A2 lados anchos.</p>';}
   if(S.pest==='herr'){const H=herr[m.id]=herr[m.id]||{};
-    h+=(m.herrajes||[]).length?m.herrajes.map((x,i)=>`<label class="chk"><input type="checkbox" data-h="${i}" ${H[i]?'checked':''}><span><b>${esc(x.cant)} ${esc(x.und||'')}</b> ${esc(x.nombre)}${x.nota?`<div class="det">${esc(x.nota)}</div>`:''}</span></label>`).join('')
-      :`<div class="vacio">${esc(m.herrajesNota||'Sin herrajes cargados.')}</div>`;}
+    h+=(m.herrajes||[]).length?m.herrajes.map((x,i)=>`<label class="chk"><input type="checkbox" data-h="${i}" ${H[i]?'checked':''}><span><b>${x.cant?esc(x.cant)+' '+esc(x.und||''):'—'}</b> ${esc(x.nombre)}${x.nota?`<div class="det">${esc(x.nota)}</div>`:''}</span></label>`).join('')
+      :`<div class="vacio">Sin herrajes cargados.</div>`;
+    if(m.herrajesNota&&(m.herrajes||[]).length)h+=`<p class="det alerta">${esc(m.herrajesNota)}</p>`;}
+  if(S.pest==='hist'){ h+=revs.length?`<h2 class="g">Por revisar</h2>`+revs.map(r=>`<div class="ev" style="border-left-color:var(--rojo)"><div class="f">${esc(r.fecha||'')}</div>${esc(r.texto)}</div>`).join(''):'';
+    h+=`<h2 class="g">Cambios, modificaciones y eventos</h2>`+((m.historial||[]).slice().reverse().map(e=>`<div class="ev"><div class="f">${esc(e.fecha)} · ${esc(e.tipo)}</div>${esc(e.texto)}</div>`).join('')||'<div class="vacio">Sin historial.</div>');
+    h+=`<p class="det">Actualizado: ${esc((m.actualizado||'').slice(0,10))}</p>`;}
   if(S.pest==='taller')h+=pintarTaller(m);
   $('#main').innerHTML=h; pintarEstado();
   $('#main').querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{S.pest=b.dataset.p;pintar();});
@@ -200,7 +210,7 @@ function buscarPiezas(m,ns){
 function hablar(t){try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='es-CO';speechSynthesis.speak(u);}catch(e){}}
 function decirCod(c){return c.replace(/([A-Z]+)\s*(\d+)([A-Z]?)/,(x,l,n,s)=>l.split('').join(' ')+' '+n+(s?' '+s:''));}
 function activarTaller(m){
-  $('#main').querySelectorAll('[data-u]').forEach(b=>b.onclick=()=>{S.uni=b.dataset.u;localStorage.setItem('mu_uni',S.uni);pintar();});
+  $('#main').querySelectorAll('[data-u]').forEach(b=>b.onclick=()=>{S.uni=b.dataset.u;localStorage.setItem('mu_uni2',S.uni);pintar();});
   const med=$('#med'); med.onkeydown=e=>{if(e.key==='Enter')identificar(m,med.value);}; med.onchange=()=>identificar(m,med.value);
   $('#reini').onclick=()=>{if(!confirm('¿Borrar el conteo de piezas identificadas de '+m.nombre+'?'))return;hallados[m.id]={};guardar();pintar();};
   const SR=window.SpeechRecognition||window.webkitSpeechRecognition; const mic=$('#mic');
@@ -218,7 +228,7 @@ function mostrar(m,r,t,voz){const box=$('#res'); if(!box)return;
     if(voz)hablar('No está en el listado'+(c?'. La más cercana es '+decirCod(c.p.codigo):''));return;}
   box.innerHTML=r.ok.slice(0,6).map(({p,M},i)=>{const n=(hallados[M.id]||{})[p.codigo]||0;const otro=M.id!==m.id;
     return `<div class="res${r.ok.length===1?' uno':''}"><div class="cod">${esc(p.codigo)}${otro?` <span class="otro">· ${esc(M.nombre)}</span>`:''}</div>
-    <div class="s">${esc(p.nombre)} · ${mm(p.largo)} × ${mm(p.ancho)}${p.final?' (final '+mm(p.final.largo)+' × '+mm(p.final.ancho)+')':''} · ${esc(p.material)} · cantos ${cantosTxt(p.cantos)}</div>
+    <div class="s">${p.revisar?'<span class="alerta">⚠ Revisar: '+esc(p.revisar)+'</span><br>':''}${esc(p.nombre)} · ${mm(p.largo)} × ${mm(p.ancho)}${p.final?' (final '+mm(p.final.largo)+' × '+mm(p.final.ancho)+')':''} · ${esc(p.material)} · cantos ${cantosTxt(p.cantos)}</div>
     <div class="fila"><span class="cuenta">${n} de ${p.cant} identificadas</span><button class="btn" data-ok="${i}">✓ Es esta</button></div></div>`;}).join('')
     +(r.ok.length>1?`<p class="det">Varias piezas con esas medidas: distínguelas por material, cantos o espesor.</p>`:'');
   box.querySelectorAll('[data-ok]').forEach(b=>b.onclick=()=>{const{p,M}=r.ok[+b.dataset.ok];const H=hallados[M.id]=hallados[M.id]||{};

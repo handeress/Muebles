@@ -14,10 +14,12 @@ App para consultar los muebles en el taller sin descargar documentos: plano de a
 - **3D:** el visor del mueble (pantalla completa).
 - **Corte:** piezas por material con código, cantidad, medida, medida final si se rebaja en taller, y cantos (R rígido, F flexible).
 - **Herrajes:** lista para chulear (se guarda en el aparato).
-- **Taller:** escribe o dicta largo y ancho (en cm o mm). Responde el código en pantalla y en voz, avisa si la pieza es de otro mueble, lleva la cuenta de las identificadas y muestra las que faltan.
+- **Historial:** lo que está por revisar y los cambios, modificaciones y eventos del mueble, del más nuevo al más viejo.
+- **Taller:** escribe o dicta largo y ancho (mm por defecto; se puede cambiar a cm). Responde el código en pantalla y en voz, avisa si la pieza es de otro mueble, lleva la cuenta de las identificadas y muestra las que faltan.
 
 ## Versiones
 
 Subir `CACHE` en `sw.js` y `VERSION` en `index.html` en cada cambio.
 
 - 1.0 (22/11/2026): primera versión con cocineta y closet de Suesca.
+- 1.1 (22/11/2026): mm por defecto, avisos de revisión por mueble y por pieza, pestaña Historial (cambios, modificaciones y eventos), muebles de Fontanar (BBQ y mesas de noche).
