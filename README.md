@@ -1,0 +1,23 @@
+# Muebles
+
+App para consultar los muebles en el taller sin descargar documentos: plano de armado, 3D, lista de corte, herrajes y un modo taller para identificar piezas sin marcar dictando sus medidas.
+
+- App: https://handeress.github.io/Muebles/ (código público, sin datos).
+- Datos: repo privado `handeress/Bitacora-datos`, carpeta `muebles/` (formato en su README). Los escribe Claude con la habilidad despiece-muebles; la app solo lee.
+- Llave: la misma de la Bitácora; la toma sola si la Bitácora ya se abrió en el mismo navegador, o se pega en Ajustes (⚙).
+- Sin señal: muestra lo último que descargó. El dictado de Android casi siempre necesita internet; sin señal se escriben las medidas.
+- Prueba sin datos: `?demo`.
+
+## Pestañas
+
+- **Plano:** hojas del plano de armado en imagen; tocar una la abre en grande con zoom.
+- **3D:** el visor del mueble (pantalla completa).
+- **Corte:** piezas por material con código, cantidad, medida, medida final si se rebaja en taller, y cantos (R rígido, F flexible).
+- **Herrajes:** lista para chulear (se guarda en el aparato).
+- **Taller:** escribe o dicta largo y ancho (en cm o mm). Responde el código en pantalla y en voz, avisa si la pieza es de otro mueble, lleva la cuenta de las identificadas y muestra las que faltan.
+
+## Versiones
+
+Subir `CACHE` en `sw.js` y `VERSION` en `index.html` en cada cambio.
+
+- 1.0 (22/11/2026): primera versión con cocineta y closet de Suesca.

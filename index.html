@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1d1b18">
+<title>Muebles</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icono-192.png">
+<style>
+:root{--papel:#f4f1ea;--hoja:#fffdf8;--tinta:#1d1b18;--gris:#6b655b;--linea:#d9d3c7;--acento:#c2410c;--ok:#15803d;--rojo:#b91c1c;--amb:#a16207}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{font:16px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--papel);color:var(--tinta);-webkit-tap-highlight-color:transparent}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer}
+header{position:sticky;top:0;z-index:5;background:var(--tinta);color:#fff;padding:10px 14px;padding-top:calc(10px + env(safe-area-inset-top));display:flex;gap:10px;align-items:center;border-bottom:6px solid var(--acento)}
+header h1{font-size:17px;margin:0;font-weight:700;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+header button{background:none;border:0;color:#fff;font-size:22px;padding:4px 8px;min-height:40px}
+main{padding:12px 12px 90px;max-width:900px;margin:0 auto}
+.estado{font-size:13px;color:var(--gris);margin:0 2px 10px}
+.estado.err{color:var(--rojo)}
+h2.g{font-size:13px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--acento);margin:16px 2px 6px}
+.tarjeta{display:block;width:100%;text-align:left;background:var(--hoja);border:1px solid var(--linea);border-radius:12px;padding:13px;margin-bottom:8px}
+.tarjeta .t{font-weight:700}.tarjeta .s{font-size:13px;color:var(--gris);margin-top:3px}
+.pest{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;position:sticky;top:calc(62px + env(safe-area-inset-top));z-index:4;background:var(--papel);padding:4px 0 8px}
+.pest button{background:var(--hoja);border:1px solid var(--linea);border-radius:9px;min-height:42px;font-size:14px;font-weight:600}
+.pest button.on{background:var(--tinta);color:#fff;border-color:var(--tinta)}
+.nota{background:#fef3c7;border:1px solid #f1d58a;border-radius:10px;padding:9px 12px;font-size:14px;margin-bottom:10px}
+.plano{background:var(--hoja);border:1px solid var(--linea);border-radius:12px;margin-bottom:10px;overflow:hidden}
+.plano .t{font-size:14px;font-weight:600;padding:9px 12px;border-bottom:1px solid var(--linea)}
+.plano img{display:block;width:100%;height:auto}
+#zoom{position:fixed;inset:0;z-index:20;background:#fff;overflow:auto;display:none;touch-action:pan-x pan-y pinch-zoom}
+#zoom img{display:block;width:250%;max-width:none}
+#zoom .cerrar{position:fixed;top:calc(10px + env(safe-area-inset-top));right:10px;z-index:21;background:var(--tinta);color:#fff;border:0;border-radius:999px;width:46px;height:46px;font-size:22px}
+#zoom .tam{position:fixed;bottom:calc(14px + env(safe-area-inset-bottom));right:10px;z-index:21;display:flex;gap:6px}
+#zoom .tam button{background:var(--tinta);color:#fff;border:0;border-radius:10px;min-width:46px;height:46px;font-size:18px}
+.visor{width:100%;height:calc(100vh - 190px);border:1px solid var(--linea);border-radius:12px;background:#fff}
+.btn{background:var(--tinta);color:#fff;border:0;border-radius:10px;padding:10px 14px;min-height:44px;font-weight:600}
+.btn.sec{background:var(--hoja);color:var(--tinta);border:1px solid var(--linea)}
+table{width:100%;table-layout:fixed;border-collapse:collapse;background:var(--hoja);border:1px solid var(--linea);border-radius:10px;overflow:hidden;font-size:14px}
+th,td{padding:7px 6px;overflow-wrap:anywhere;border-bottom:1px solid var(--linea);text-align:left;vertical-align:top}
+th{font-size:12px;color:var(--gris);font-weight:700;text-transform:uppercase;letter-spacing:.04em;background:#f7f3eb}
+td.n{text-align:right;white-space:nowrap}
+td.cod{font-weight:700}
+.cantos{font-family:ui-monospace,Menlo,monospace;font-size:13px;white-space:nowrap}
+.det{font-size:12px;color:var(--gris)}
+.chk{display:flex;gap:10px;align-items:center;background:var(--hoja);border:1px solid var(--linea);border-radius:10px;padding:11px 12px;margin-bottom:6px}
+.chk input{width:22px;height:22px}
+.taller{display:flex;gap:8px;margin-bottom:8px}
+.taller input{flex:1;min-width:0;font-size:22px;background:var(--hoja);border:1px solid var(--linea);border-radius:12px;padding:10px 12px;min-height:56px}
+.mic{width:64px;border:0;border-radius:12px;background:var(--acento);color:#fff;font-size:26px}
+.mic.on{background:var(--rojo);animation:lat 1s infinite}
+@keyframes lat{50%{opacity:.6}}
+.uni{display:flex;gap:6px;margin-bottom:10px;font-size:14px;align-items:center;color:var(--gris)}
+.uni button{background:var(--hoja);border:1px solid var(--linea);border-radius:999px;padding:6px 12px}
+.uni button.on{background:var(--tinta);color:#fff;border-color:var(--tinta)}
+.res{background:var(--hoja);border:2px solid var(--linea);border-radius:14px;padding:14px;margin-bottom:8px}
+.res.uno{border-color:var(--ok)}
+.res .cod{font-size:34px;font-weight:800;line-height:1.1}
+.res .s{font-size:14px;color:var(--gris);margin-top:4px}
+.res .otro{color:var(--rojo);font-weight:700}
+.res .fila{display:flex;gap:8px;align-items:center;justify-content:space-between;margin-top:10px}
+.cuenta{font-size:13px;color:var(--gris)}
+.falta{display:flex;flex-wrap:wrap;gap:6px}
+.falta span{background:var(--hoja);border:1px solid var(--linea);border-radius:999px;padding:5px 10px;font-size:13px}
+.falta span.lis{border-color:var(--ok);color:var(--ok)}
+.buscar{width:100%;background:var(--hoja);border:1px solid var(--linea);border-radius:10px;padding:10px 12px;min-height:44px;margin-bottom:10px}
+.links a{display:block;background:var(--hoja);border:1px solid var(--linea);border-radius:10px;padding:11px 12px;margin-bottom:6px;color:var(--tinta);text-decoration:none}
+label.et{display:block;font-size:12px;letter-spacing:.07em;text-transform:uppercase;color:var(--gris);margin:16px 2px 5px}
+input.campo{width:100%;background:var(--hoja);border:1px solid var(--linea);border-radius:10px;padding:11px 12px;min-height:46px}
+.vacio{text-align:center;color:var(--gris);padding:36px 16px}
+#toast{position:fixed;left:50%;bottom:30px;transform:translateX(-50%);background:var(--tinta);color:#fff;padding:10px 16px;border-radius:10px;font-size:14px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:30}
+#toast.on{opacity:1}
+</style>
+</head>
+<body>
+<header><button id="atras" hidden>‹</button><h1 id="titulo">Muebles</h1><button id="aj" title="Ajustes">⚙</button></header>
+<main id="main"></main>
+<div id="zoom"><button class="cerrar" id="zc">✕</button><img id="zi" alt=""><div class="tam"><button id="zm">−</button><button id="zp">+</button></div></div>
+<div id="toast"></div>
+<script>
+'use strict';
+const VERSION='1.0';
+const GH={dueno:'handeress',repo:'Bitacora-datos',carpeta:'muebles'};
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const demo=new URLSearchParams(location.search).has('demo');
+const S={vista:'inicio',mueble:null,pest:'plano',q:'',uni:localStorage.getItem('mu_uni')||'cm'};
+let token='',indice=[],muebles={},estado='',ocupado=false,urls={};
+let hallados={};try{hallados=JSON.parse(localStorage.getItem('mu_hallados')||'{}');}catch(e){}
+let herr={};try{herr=JSON.parse(localStorage.getItem('mu_herr')||'{}');}catch(e){}
+function guardar(){localStorage.setItem('mu_hallados',JSON.stringify(hallados));localStorage.setItem('mu_herr',JSON.stringify(herr));}
+function toast(t){const e=$('#toast');e.textContent=t;e.classList.add('on');clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove('on'),2200);}
+
+/* Llave: la de la Bitácora (mismo sitio) o la pegada en Ajustes. */
+function llaveBitacora(){return new Promise(res=>{try{const r=indexedDB.open('bitacora');
+  r.onupgradeneeded=()=>{try{r.transaction.abort();}catch(e){} res('');};r.onerror=()=>res('');
+  r.onsuccess=()=>{const db=r.result;try{if(!db.objectStoreNames.contains('meta')){db.close();return res('');}
+    const g=db.transaction('meta').objectStore('meta').get('token');g.onsuccess=()=>{db.close();res((g.result&&g.result.v)||'');};g.onerror=()=>{db.close();res('');};}catch(e){db.close();res('');}};
+  }catch(e){res('');}});}
+
+/* Lee un archivo del repo de datos y lo guarda para usarlo sin señal. */
+async function archivo(ruta,tipo){
+  const clave='https://datos.local/'+ruta; let cache=null; try{cache=await caches.open('muebles-datos');}catch(e){}
+  if(token&&navigator.onLine){
+    try{const r=await fetch('https://api.github.com/repos/'+GH.dueno+'/'+GH.repo+'/contents/'+ruta.split('/').map(encodeURIComponent).join('/'),
+        {cache:'no-store',headers:{'Authorization':'Bearer '+token,'Accept':'application/vnd.github.raw+json','X-GitHub-Api-Version':'2022-11-28'}});
+      if(r.ok){const b=await r.blob(); if(cache) await cache.put(clave,new Response(b)); return conv(b,tipo);}
+      if(r.status===401) estado='La llave no sirve o venció.'; else if(r.status===403||r.status===404) estado='La llave no tiene permiso sobre '+GH.repo+' o falta '+ruta+'.';
+    }catch(e){}
+  }
+  if(cache){const g=await cache.match(clave); if(g) return conv(await g.blob(),tipo);}
+  throw new Error('sin '+ruta);
+}
+async function conv(b,tipo){if(tipo==='json')return JSON.parse(await b.text());if(tipo==='texto')return b.text();return b;}
+
+async function cargar(){
+  if(demo){cargarDemo();return pintar();}
+  if(ocupado)return; ocupado=true; estado=navigator.onLine?'Actualizando…':'Sin señal: se muestra lo guardado.'; pintarEstado();
+  try{ const ind=await archivo(GH.carpeta+'/indice.json','json'); indice=ind.muebles||[];
+    for(const m of indice){ try{ muebles[m.id]=await archivo(GH.carpeta+'/'+m.id+'/mueble.json','json'); }catch(e){} }
+    if(navigator.onLine&&token){ estado='Al día · '+new Date().toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit'});
+      for(const m of Object.values(muebles)) for(const p of m.planos||[]) archivo(GH.carpeta+'/'+m.id+'/'+p.archivo).catch(()=>{}); }
+    else if(!token) estado='Sin llave. Abre la Bitácora una vez en este navegador o pega la llave en Ajustes.';
+    else estado='Sin señal: se muestra lo guardado.';
+  }catch(e){ if(!estado||estado==='Actualizando…') estado=token?'No se pudo leer los muebles.':'Sin llave. Abre la Bitácora una vez en este navegador o pega la llave en Ajustes.'; }
+  ocupado=false; pintar();
+}
+function pintarEstado(){const e=$('#est');if(e){e.textContent=estado;e.className='estado'+(/No se|Sin llave|no sirve|permiso/.test(estado)?' err':'');}}
+
+function cantosTxt(c){const n=['L1','L2','A1','A2'];const x=(c||[]).map((v,i)=>v?n[i]+v:'').filter(Boolean);return x.length?x.join(' '):'—';}
+function mm(v){return Number(v).toLocaleString('es-CO');}
+
+function pintar(){
+  $('#atras').hidden=S.vista==='inicio';
+  if(S.vista==='ajustes')return pintarAjustes();
+  if(S.vista==='mueble'&&muebles[S.mueble])return pintarMueble(muebles[S.mueble]);
+  S.vista='inicio'; $('#titulo').textContent='Muebles';
+  const porP={}; for(const m of indice){(porP[m.proyectoNombre||m.proyecto]=porP[m.proyectoNombre||m.proyecto]||[]).push(m);}
+  let h='<div class="estado" id="est"></div>';
+  if(!indice.length)h+='<div class="vacio">No hay muebles cargados todavía.<br>Claude los sube cuando hace un despiece.</div>';
+  for(const[p,ls]of Object.entries(porP)){h+=`<h2 class="g">${esc(p)}</h2>`;
+    for(const m of ls){const M=muebles[m.id];const tot=M?M.piezas.reduce((s,x)=>s+x.cant,0):m.piezas;const hal=M?M.piezas.reduce((s,x)=>s+Math.min(x.cant,(hallados[m.id]||{})[x.codigo]||0),0):0;
+      h+=`<button class="tarjeta" data-m="${esc(m.id)}"><div class="t">${esc(m.nombre)}</div><div class="s">${M?M.piezas.length+' códigos · ':''}${tot} piezas${hal?' · '+hal+' identificadas en taller':''}${M?'':' · sin descargar'}</div></button>`;}}
+  $('#main').innerHTML=h; pintarEstado();
+  $('#main').querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{if(!muebles[b.dataset.m])return toast('Ese mueble no se ha descargado: abre la app con señal');S.vista='mueble';S.mueble=b.dataset.m;S.pest='plano';scrollTo(0,0);pintar();});
+}
+
+function pintarMueble(m){
+  $('#titulo').textContent=m.nombre+' · '+(m.proyectoNombre||'');
+  const P=[['plano','Plano'],['3d','3D'],['corte','Corte'],['herr','Herrajes'],['taller','Taller']];
+  let h=`<div class="pest">${P.map(([k,t])=>`<button data-p="${k}" class="${S.pest===k?'on':''}">${t}</button>`).join('')}</div><div class="estado" id="est"></div>`;
+  if(S.pest==='plano'){ if(m.nota)h+=`<div class="nota">${esc(m.nota)}</div>`;
+    h+=(m.planos||[]).map((p,i)=>`<div class="plano"><div class="t">${esc(p.titulo)}</div><img data-pl="${i}" alt="${esc(p.titulo)}"></div>`).join('')||'<div class="vacio">Sin planos.</div>';
+    if((m.docs||[]).length)h+=`<h2 class="g">Archivos en Drive</h2><div class="links">${m.docs.map(d=>`<a href="${esc(d.url)}" target="_blank" rel="noopener">${esc(d.titulo)}</a>`).join('')}</div>`;}
+  if(S.pest==='3d') h+=m.visor?`<p><button class="btn sec" id="full">Pantalla completa</button></p><iframe class="visor" id="vis" title="3D"></iframe>`:'<div class="vacio">Este mueble todavía no tiene 3D.</div>';
+  if(S.pest==='corte'){const mats={};for(const p of m.piezas)(mats[p.material]=mats[p.material]||[]).push(p);
+    h+=`<input class="buscar" id="q" type="search" placeholder="Buscar código o pieza" value="${esc(S.q)}">`;
+    for(const[mat,ps]of Object.entries(mats)){const q=S.q.trim().toLowerCase();const v=ps.filter(p=>!q||(p.codigo+' '+p.nombre).toLowerCase().includes(q));if(!v.length)continue;
+      h+=`<h2 class="g">${esc(mat)} · ${ps[0].esp||15} mm · ${ps.reduce((s,p)=>s+p.cant,0)} piezas</h2><table><colgroup><col style="width:21%"><col style="width:37%"><col style="width:25%"><col style="width:17%"></colgroup><tr><th>Código</th><th>Pieza</th><th>Medida</th><th>Canto</th></tr>`
+       +v.map(p=>`<tr><td class="cod">${esc(p.codigo)}<div class="det">× ${p.cant}</div></td><td>${esc(p.nombre)}${p.detalle?`<div class="det">${esc(p.detalle)}</div>`:''}</td><td class="n">${mm(p.largo)} × ${mm(p.ancho)}${p.final?`<div class="det">final ${mm(p.final.largo)} × ${mm(p.final.ancho)}</div>`:''}</td><td class="cantos">${cantosTxt(p.cantos).replace(/ /g,'<br>')}</td></tr>`).join('')+'</table>';}
+    h+='<p class="det">Medidas en mm. Cantos: R rígido, F flexible · L1 L2 lados largos, A1 A2 lados anchos.</p>';}
+  if(S.pest==='herr'){const H=herr[m.id]=herr[m.id]||{};
+    h+=(m.herrajes||[]).length?m.herrajes.map((x,i)=>`<label class="chk"><input type="checkbox" data-h="${i}" ${H[i]?'checked':''}><span><b>${esc(x.cant)} ${esc(x.und||'')}</b> ${esc(x.nombre)}${x.nota?`<div class="det">${esc(x.nota)}</div>`:''}</span></label>`).join('')
+      :`<div class="vacio">${esc(m.herrajesNota||'Sin herrajes cargados.')}</div>`;}
+  if(S.pest==='taller')h+=pintarTaller(m);
+  $('#main').innerHTML=h; pintarEstado();
+  $('#main').querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{S.pest=b.dataset.p;pintar();});
+  if(S.pest==='plano')$('#main').querySelectorAll('[data-pl]').forEach(async img=>{const p=m.planos[+img.dataset.pl];const k=m.id+'/'+p.archivo;
+    try{if(!urls[k])urls[k]=URL.createObjectURL(await archivo(GH.carpeta+'/'+k));img.src=urls[k];img.onclick=()=>zoom(urls[k]);}catch(e){img.replaceWith(Object.assign(document.createElement('div'),{className:'vacio',textContent:'No se pudo cargar esta hoja (sin señal y sin guardar).'}));}});
+  if(S.pest==='3d'&&m.visor){(async()=>{try{const t=demo?'<p style="font:16px system-ui;padding:20px">3D de prueba</p>':await archivo(m.visor,'texto');const f=$('#vis');f.srcdoc=t;$('#full').onclick=()=>{f.requestFullscreen?f.requestFullscreen():f.webkitRequestFullscreen&&f.webkitRequestFullscreen();};}catch(e){$('#vis').replaceWith(Object.assign(document.createElement('div'),{className:'vacio',textContent:'No se pudo cargar el 3D.'}));}})();}
+  if(S.pest==='corte'){const q=$('#q');q.oninput=()=>{S.q=q.value;clearTimeout(q._t);q._t=setTimeout(()=>{pintar();const n=$('#q');n.focus();n.setSelectionRange(n.value.length,n.value.length);},300);};}
+  if(S.pest==='herr')$('#main').querySelectorAll('[data-h]').forEach(c=>c.onchange=()=>{herr[m.id][c.dataset.h]=c.checked;guardar();});
+  if(S.pest==='taller')activarTaller(m);
+}
+
+/* ---------- Taller: identificar piezas por medidas ---------- */
+let ultimo=null;
+function pintarTaller(m){
+  return `<div class="uni">Dicto en <button data-u="cm" class="${S.uni==='cm'?'on':''}">cm</button><button data-u="mm" class="${S.uni==='mm'?'on':''}">mm</button></div>
+  <div class="taller"><input id="med" inputmode="decimal" placeholder="ej. 55 por 18" autocomplete="off"><button class="mic" id="mic" title="Dictar">🎤</button></div>
+  <div id="res"></div><h2 class="g">Faltan por identificar</h2><div class="falta" id="falta"></div>
+  <p><button class="btn sec" id="reini">Empezar el conteo de nuevo</button></p>`;
+}
+function numeros(t){t=t.toLowerCase().replace(/(\d),(\d)/g,'$1.$2').replace(/\bpor\b|x|×|\*/g,' ');
+  const pal={cero:0,uno:1,una:1,dos:2,tres:3,cuatro:4,cinco:5,seis:6,siete:7,ocho:8,nueve:9,diez:10,once:11,doce:12,quince:15,veinte:20,treinta:30,cuarenta:40,cincuenta:50,sesenta:60,setenta:70,ochenta:80,noventa:90,cien:100};
+  return t.split(/[\s;\/]+/).map(w=>w in pal?pal[w]:parseFloat(w)).filter(n=>!isNaN(n)&&n>0);}
+function buscarPiezas(m,ns){
+  const f=S.uni==='cm'?10:1; const v=ns.slice(0,2).map(n=>n*f); if(v.length<2)return null;
+  const tol=S.uni==='cm'?6:2; const [a,b]=v.sort((x,y)=>y-x);
+  const todas=[];for(const M of Object.values(muebles))for(const p of M.piezas)todas.push({p,M});
+  const prueba=(L,A)=>{const[x,y]=[L,A].sort((i,j)=>j-i);return Math.abs(x-a)<=tol&&Math.abs(y-b)<=tol;};
+  const ok=todas.filter(({p})=>prueba(p.largo,p.ancho)||(p.final&&prueba(p.final.largo,p.final.ancho)));
+  const dist=({p})=>{const[x,y]=[p.largo,p.ancho].sort((i,j)=>j-i);return Math.abs(x-a)+Math.abs(y-b);};
+  ok.sort((x,y)=>(x.M.id===m.id?0:1)-(y.M.id===m.id?0:1)||dist(x)-dist(y));
+  let cerca=null; if(!ok.length){cerca=todas.slice().sort((x,y)=>dist(x)-dist(y))[0];}
+  return {ok,cerca,a,b};
+}
+function hablar(t){try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='es-CO';speechSynthesis.speak(u);}catch(e){}}
+function decirCod(c){return c.replace(/([A-Z]+)\s*(\d+)([A-Z]?)/,(x,l,n,s)=>l.split('').join(' ')+' '+n+(s?' '+s:''));}
+function activarTaller(m){
+  $('#main').querySelectorAll('[data-u]').forEach(b=>b.onclick=()=>{S.uni=b.dataset.u;localStorage.setItem('mu_uni',S.uni);pintar();});
+  const med=$('#med'); med.onkeydown=e=>{if(e.key==='Enter')identificar(m,med.value);}; med.onchange=()=>identificar(m,med.value);
+  $('#reini').onclick=()=>{if(!confirm('¿Borrar el conteo de piezas identificadas de '+m.nombre+'?'))return;hallados[m.id]={};guardar();pintar();};
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition; const mic=$('#mic');
+  if(!SR){mic.onclick=()=>toast('Este navegador no deja dictar. Escribe las medidas.');}
+  else mic.onclick=()=>{const r=new SR();r.lang='es-CO';r.interimResults=false;r.maxAlternatives=1;mic.classList.add('on');
+    r.onresult=e=>{const t=e.results[0][0].transcript;med.value=t;identificar(m,t);};
+    r.onerror=e=>{toast(e.error==='network'?'El dictado necesita internet. Escribe las medidas.':'No te entendí, repite.');};
+    r.onend=()=>mic.classList.remove('on'); try{r.start();}catch(e){mic.classList.remove('on');}};
+  pintarFalta(m); if(ultimo&&ultimo.mid===m.id)mostrar(m,ultimo.r,ultimo.t);
+}
+function identificar(m,t){const ns=numeros(t); if(ns.length<2){hablar('Repite las medidas');return toast('Dame largo y ancho');}
+  const r=buscarPiezas(m,ns); ultimo={mid:m.id,r,t}; mostrar(m,r,t,true);}
+function mostrar(m,r,t,voz){const box=$('#res'); if(!box)return;
+  if(!r.ok.length){const c=r.cerca;box.innerHTML=`<div class="res"><div class="s">${esc(t)} → ${mm(r.a)} × ${mm(r.b)} mm</div><div class="cod">No está</div>${c?`<div class="s">La más cercana: ${esc(c.p.codigo)} · ${mm(c.p.largo)} × ${mm(c.p.ancho)} (${esc(c.M.nombre)})</div>`:''}</div>`;
+    if(voz)hablar('No está en el listado'+(c?'. La más cercana es '+decirCod(c.p.codigo):''));return;}
+  box.innerHTML=r.ok.slice(0,6).map(({p,M},i)=>{const n=(hallados[M.id]||{})[p.codigo]||0;const otro=M.id!==m.id;
+    return `<div class="res${r.ok.length===1?' uno':''}"><div class="cod">${esc(p.codigo)}${otro?` <span class="otro">· ${esc(M.nombre)}</span>`:''}</div>
+    <div class="s">${esc(p.nombre)} · ${mm(p.largo)} × ${mm(p.ancho)}${p.final?' (final '+mm(p.final.largo)+' × '+mm(p.final.ancho)+')':''} · ${esc(p.material)} · cantos ${cantosTxt(p.cantos)}</div>
+    <div class="fila"><span class="cuenta">${n} de ${p.cant} identificadas</span><button class="btn" data-ok="${i}">✓ Es esta</button></div></div>`;}).join('')
+    +(r.ok.length>1?`<p class="det">Varias piezas con esas medidas: distínguelas por material, cantos o espesor.</p>`:'');
+  box.querySelectorAll('[data-ok]').forEach(b=>b.onclick=()=>{const{p,M}=r.ok[+b.dataset.ok];const H=hallados[M.id]=hallados[M.id]||{};
+    H[p.codigo]=(H[p.codigo]||0)+1; guardar(); if(H[p.codigo]>p.cant){toast('Ojo: ya van '+H[p.codigo]+' de '+p.cant+' de '+p.codigo);hablar('Sobra una '+decirCod(p.codigo));} else toast(p.codigo+': '+H[p.codigo]+' de '+p.cant);
+    const med=$('#med');med.value='';mostrar(m,r,t);pintarFalta(m);med.focus();});
+  if(voz){if(r.ok.length===1){const{p,M}=r.ok[0];hablar(decirCod(p.codigo)+(M.id!==m.id?', de '+M.nombre:''));}else hablar('Hay '+r.ok.length+' opciones: '+r.ok.slice(0,3).map(x=>decirCod(x.p.codigo)).join(', '));}
+}
+function pintarFalta(m){const H=hallados[m.id]||{};const e=$('#falta');if(!e)return;
+  e.innerHTML=m.piezas.map(p=>{const n=H[p.codigo]||0;return `<span class="${n>=p.cant?'lis':''}">${esc(p.codigo)} ${n}/${p.cant}</span>`;}).join('');}
+
+/* ---------- Ajustes ---------- */
+function pintarAjustes(){$('#titulo').textContent='Ajustes';
+  $('#main').innerHTML=`<div class="estado" id="est"></div><div class="nota">La app usa la llave de la Bitácora si ya la abriste en este navegador. Si no, pega aquí la llave "Bitacora celular".</div>
+  <label class="et">Llave de GitHub</label><input class="campo" id="tok" type="password" placeholder="${token?'Hay una llave guardada':'github_pat_…'}">
+  <p><button class="btn" id="bTok">Guardar llave</button> <button class="btn sec" id="bBit">Usar la de la Bitácora</button></p>
+  <p><button class="btn sec" id="bSync">Actualizar ahora</button></p><p class="estado">Versión ${VERSION} · datos en ${GH.repo}/${GH.carpeta}</p>`;
+  pintarEstado();
+  $('#bTok').onclick=()=>{const v=$('#tok').value.trim();if(!v)return toast('Pega primero la llave');token=v;localStorage.setItem('mu_token',v);toast('Llave guardada');cargar();};
+  $('#bBit').onclick=async()=>{const v=await llaveBitacora();if(!v)return toast('No encontré la llave de la Bitácora en este navegador');token=v;localStorage.setItem('mu_token',v);toast('Llave de la Bitácora lista');cargar();};
+  $('#bSync').onclick=()=>cargar();}
+
+/* ---------- Zoom de planos ---------- */
+let zw=250;
+function zoom(u){$('#zi').src=u;zw=250;$('#zi').style.width=zw+'%';$('#zoom').style.display='block';}
+$('#zc').onclick=()=>{$('#zoom').style.display='none';};
+$('#zp').onclick=()=>{zw=Math.min(600,zw+75);$('#zi').style.width=zw+'%';};
+$('#zm').onclick=()=>{zw=Math.max(100,zw-75);$('#zi').style.width=zw+'%';};
+
+function cargarDemo(){indice=[{id:'d-coc',nombre:'Cocineta (prueba)',proyecto:'suesca',proyectoNombre:'Cabaña Suesca',piezas:9}];
+  muebles['d-coc']={id:'d-coc',nombre:'Cocineta (prueba)',proyectoNombre:'Cabaña Suesca',nota:'Datos de prueba.',planos:[],visor:'x',docs:[],herrajes:[{nombre:'Bisagra cierre lento',cant:4,und:'par'},{nombre:'Correderas 50 cm',cant:5,und:'par'}],
+   piezas:[{codigo:'CAB 7',nombre:'Laterales cajones de 180',material:'Blanco',largo:550,ancho:180,esp:15,cant:4,cantos:['F','','','']},{codigo:'CAB 8',nombre:'Laterales cajones de 260',material:'Blanco',largo:550,ancho:260,esp:15,cant:4,cantos:['F','','','']},
+   {codigo:'CAA 2',nombre:'Travesaño',material:'Ambar',largo:795,ancho:70,esp:15,cant:3,cantos:['F','','',''],detalle:'Sale a 70; se rebaja a 40 en taller.',final:{largo:795,ancho:40}}]};
+  estado='Modo de prueba: datos de ejemplo.';}
+
+$('#atras').onclick=()=>{S.vista='inicio';pintar();};
+$('#aj').onclick=()=>{S.vista='ajustes';pintar();};
+addEventListener('online',cargar);
+(async function(){
+  token=localStorage.getItem('mu_token')||''; if(!token&&!demo){token=await llaveBitacora();if(token)localStorage.setItem('mu_token',token);}
+  pintar(); cargar();
+  if('serviceWorker' in navigator&&!demo)navigator.serviceWorker.register('sw.js').catch(()=>{});
+})();
+</script>
+</body>
+</html>
