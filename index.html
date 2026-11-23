@@ -88,7 +88,7 @@ input.campo{width:100%;background:var(--hoja);border:1px solid var(--linea);bord
 <div id="toast"></div>
 <script>
 'use strict';
-const VERSION='1.2';
+const VERSION='1.3';
 const GH={dueno:'handeress',repo:'Bitacora-datos',carpeta:'muebles'};
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -139,7 +139,11 @@ function pintarEstado(){const e=$('#est');if(e){e.textContent=estado;e.className
 function cantosTxt(c){const n=['L1','L2','A1','A2'];const x=(c||[]).map((v,i)=>v?n[i]+v:'').filter(Boolean);return x.length?x.join(' '):'—';}
 function mm(v){return Number(v).toLocaleString('es-CO');}
 
-function pintar(){
+// Atrás: subpágina → página inicial del elemento → inicio de la app → cierra la app.
+function nivel(){if(S.vista==='inicio')return 0;if(S.vista==='mueble'&&S.pest!=='plano')return 2;return 1;}
+function syncHist(){const L=nivel(),n=(history.state&&history.state.n)||0;if(L>n){for(let i=n+1;i<=L;i++)history.pushState({n:i},'');}else if(L===n)history.replaceState({n:L},'');else history.go(L-n);}
+window.addEventListener('popstate',e=>{const z=$('#zoom');if(z&&z.style.display==='block'){z.style.display='none';return;}const n=(e.state&&e.state.n)||0;if(n===0)S.vista='inicio';else if(n===1&&S.vista==='mueble')S.pest='plano';scrollTo(0,0);pintar();});
+function pintar(){syncHist();
   $('#atras').hidden=S.vista==='inicio';
   if(S.vista==='ajustes')return pintarAjustes();
   if(S.vista==='mueble'&&muebles[S.mueble])return pintarMueble(muebles[S.mueble]);
@@ -255,7 +259,9 @@ function pintarAjustes(){$('#titulo').textContent='Ajustes';
 /* ---------- Zoom de planos ---------- */
 let zw=250;
 function zoom(u){$('#zi').src=u;zw=250;$('#zi').style.width=zw+'%';$('#zoom').style.display='block';}
-$('#zc').onclick=()=>{$('#zoom').style.display='none';};
+$('#zc').onclick=()=>history.back();
+// La imagen ampliada cuenta como un paso más: atrás la cierra.
+new MutationObserver(()=>{const z=$('#zoom');if(z.style.display==='block'&&!(history.state&&history.state.zoom))history.pushState({n:((history.state&&history.state.n)||0)+1,zoom:1},'');}).observe($('#zoom'),{attributes:true,attributeFilter:['style']});
 $('#zp').onclick=()=>{zw=Math.min(600,zw+75);$('#zi').style.width=zw+'%';};
 $('#zm').onclick=()=>{zw=Math.max(100,zw-75);$('#zi').style.width=zw+'%';};
 
@@ -265,7 +271,7 @@ function cargarDemo(){indice=[{id:'d-coc',nombre:'Cocineta (prueba)',proyecto:'s
    {codigo:'CAA 2',nombre:'Travesaño',material:'Ambar',largo:795,ancho:70,esp:15,cant:3,cantos:['F','','',''],detalle:'Sale a 70; se rebaja a 40 en taller.',final:{largo:795,ancho:40}}]};
   estado='Modo de prueba: datos de ejemplo.';}
 
-$('#atras').onclick=()=>{S.vista='inicio';pintar();};
+$('#atras').onclick=()=>history.back();
 $('#aj').onclick=()=>{S.vista='ajustes';pintar();};
 addEventListener('online',cargar);
 (async function(){

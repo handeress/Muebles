@@ -23,3 +23,5 @@ Subir `CACHE` en `sw.js` y `VERSION` en `index.html` en cada cambio.
 
 - 1.0 (22/11/2026): primera versión con cocineta y closet de Suesca.
 - 1.1 (22/11/2026): mm por defecto, avisos de revisión por mueble y por pieza, pestaña Historial (cambios, modificaciones y eventos), muebles de Fontanar (BBQ y mesas de noche).
+
+- 1.3 (23-nov-2026): botón Instalar en el celular; atrás va de subpágina a la página inicial del elemento, luego al inicio y luego cierra la app.
