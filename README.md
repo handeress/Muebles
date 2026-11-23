@@ -25,3 +25,5 @@ Subir `CACHE` en `sw.js` y `VERSION` en `index.html` en cada cambio.
 - 1.1 (22/11/2026): mm por defecto, avisos de revisión por mueble y por pieza, pestaña Historial (cambios, modificaciones y eventos), muebles de Fontanar (BBQ y mesas de noche).
 
 - 1.3 (23-nov-2026): botón Instalar en el celular; atrás va de subpágina a la página inicial del elemento, luego al inicio y luego cierra la app.
+
+- 1.4 (23-nov-2026): recuerda el elemento y la pestaña al recargar (12 h); el 3D guarda su vista (cámara, filtros, corte, separación, abierto) y se recarga solo si el celular lo borra al cambiar de app.
